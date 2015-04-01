@@ -14,6 +14,7 @@ int main() {
     // set up LED1 pin as a digital output
 
     // set up LED2 as OC1 using Timer2 at 1kHz
+    
 
     // set up A0 as AN0
     ANSELAbits.ANSA0 = 1;
