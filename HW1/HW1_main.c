@@ -78,10 +78,11 @@ int main() {
         TRISBbits.TRISB13 = 1;
 
     // set up LED1 pin as a digital output
-        TRISBbits.TRISB8 = 0;
+        TRISBbits.TRISB7 = 0;
 
     // set up LED2 as OC1 using Timer2 at 1kHz
-        RPB7Rbits.RPB7R = 0b0101;
+        ANSELBbits.ANSB15 = 0;
+        RPB15Rbits.RPB15R = 0b0101;
         T2CONbits.TCKPS = 1;
         PR2 = 19999;
         TMR2 = 0;
@@ -101,7 +102,7 @@ int main() {
 
     while (1) {
     _CP0_SET_COUNT(0); // set core timer to 0, remember it counts at half the CPU clock
-    LATBINV = 0x100; // invert a pin
+    LATBINV = 0b10000000; // invert a pin
 
     // wait for half a second, setting LED brightness to pot angle while waiting
     while (_CP0_GET_COUNT() < 10000000) {
@@ -111,7 +112,7 @@ int main() {
         if (PORTBbits.RB13 == 1) {
             // nothing
         } else {
-            LATBINV = 0x100;
+            LATBINV = 0b10000000;
         }
     }
 }
@@ -135,3 +136,4 @@ int readADC(void) {
     a = ADC1BUF0;
     return a;
 }
+
