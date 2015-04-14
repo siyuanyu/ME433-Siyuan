@@ -51,7 +51,7 @@
 
 int readADC(void);
 
-int oled(void);
+int oledprint(int printcol, int printrow, char asciimessage[]);
 
 // lookup table for all of the ascii characters
 static const char ASCII[96][5] = {
@@ -177,6 +177,21 @@ int main() {
 
         __builtin_enable_interrupts();
 
+    //HW4
+    char message[50];
+    int value = 1337;
+    int x_start = 28;
+    int y_start = 32;
+
+    if ((x_start < 129) & (y_start < 65)) {
+        sprintf(message,"Hello world %d!",value);
+        oledprint(x_start,y_start,message);
+    }
+    else {
+        sprintf(message,"Initial position (%d,%d) does not exist",x_start,y_start);
+        oledprint(2,30,message);
+    }
+
     // set up USER pin as input
         ANSELBbits.ANSB13 = 0;
         TRISBbits.TRISB13 = 1;
@@ -203,8 +218,6 @@ int main() {
         AD1CON3bits.ADCS = 3;
         AD1CHSbits.CH0SA = 0;
         AD1CON1bits.ADON = 1;
-
-    oled();
 
     while (1) {
     _CP0_SET_COUNT(0); // set core timer to 0, remember it counts at half the CPU clock
@@ -245,31 +258,25 @@ int readADC(void) {
 
 //HW4 NEW CODE-------------------------------------------------------------------
 
-int oled(void) {
-    display_clear();
-    char message[50]; 
-    sprintf(message,"Hello world 1337!");
+int oledprint(int printcol, int printrow, char asciimessage[]) {
+    display_init();
     int i = 0;
-    int printrow = 15;
-    int printcol = 30;
     int asciicol;
     int bitnum;
-    while (message[i]) { 
-        int asciirow = message[i] - 0x20;
+    while (asciimessage[i]) {
+        int asciirow = asciimessage[i] - 0x20;
         for (asciicol=0; asciicol<5; asciicol++) {
             int asciibyte = ASCII[asciirow][asciicol];
             for (bitnum=0; bitnum<8; bitnum++) {
-                int asciibit = bitnum >> asciibyte;
-                int value = asciibit & 0b1;
-                display_pixel_set(printrow+asciicol, printcol+bitnum,value);
+                int asciibit = asciibyte >> bitnum;
+                int highlow = asciibit & 0b1;
+                display_pixel_set(printrow+bitnum, printcol, highlow);
+            }
+            printcol = printcol+1;
         }
-    }
         i++;
-        
     }
-    
-    
-    
+    display_draw();
 }
 
 
