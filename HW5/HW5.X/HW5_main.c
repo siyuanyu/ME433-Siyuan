@@ -230,13 +230,13 @@ int main() {
     while (_CP0_GET_COUNT() < 10000000) {
         int val = readADC();
         OC1RS = val * (20000/1024);
+        accelfunction();
 
         if (PORTBbits.RB13 == 1) {
             // nothing
         } else {
             LATBINV = 0b10000000;
         }
-
     }
 }
     }
@@ -342,7 +342,7 @@ int accelfunction(void) {
         acc_read_register(TEMP_OUT_L, (unsigned char *) &temp, 2);
 
     //Update LED
-        int tempf = 25+temp;
+        int tempf = temp;
         display_clear();
         sprintf(message,"(%d,%d)",accels[0],accels[1]);
         sprintf(tempmessage,"Temp: %d",tempf);
